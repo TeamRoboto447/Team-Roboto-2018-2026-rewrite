@@ -5,7 +5,7 @@
 package frc.robot;
 
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.utils.TriggerJoystick;
+import frc.robot.utils.LogitechAttackThree;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -25,8 +25,8 @@ public class RobotContainer {
     PowerDistribution PDP = new PowerDistribution(0, ModuleType.kCTRE);
     public final DriveSubsystem driveSubsystem;
     
-    private final TriggerJoystick leftJoytick = new TriggerJoystick(0);
-    private final TriggerJoystick rightJoystick = new TriggerJoystick(1);
+    private final LogitechAttackThree leftJoytick = new LogitechAttackThree(0);
+    private final LogitechAttackThree rightJoystick = new LogitechAttackThree(1);
     
 	static double driveMultiplier = 1;
 
@@ -51,7 +51,7 @@ public class RobotContainer {
         // Set the default command of the drive subsystem to control the drivetrain
         driveSubsystem.setDefaultCommand(driveSubsystem.run(
             () -> {
-                if(leftJoytick.getButtonState(1)&&leftJoytick.getButtonState(2)) {
+                if(leftJoytick.buttonTwo().getAsBoolean() && leftJoytick.trigger().getAsBoolean()) {
                     driveSubsystem.drive(-(leftJoytick.getY() * driveMultiplier), -(rightJoystick.getY() * driveMultiplier));
                 } else {
                     driveSubsystem.drive(rightJoystick.getY() * driveMultiplier, leftJoytick.getY() * driveMultiplier);
@@ -60,11 +60,11 @@ public class RobotContainer {
         ));
 
 
-        rightJoystick.getButton(1).onTrue(Commands.runOnce(() -> {
+        rightJoystick.trigger().onTrue(Commands.runOnce(() -> {
             driveSubsystem.setTransmission(DoubleSolenoid.Value.kForward);
         }));
 
-        rightJoystick.getButton(2).onTrue(Commands.runOnce(() -> {
+        rightJoystick.buttonTwo().onTrue(Commands.runOnce(() -> {
             driveSubsystem.setTransmission(DoubleSolenoid.Value.kReverse);
         }));
     }
