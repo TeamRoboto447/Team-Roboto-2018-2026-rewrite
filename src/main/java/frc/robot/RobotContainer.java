@@ -4,9 +4,9 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import edu.wpi.first.wpilibj.Joystick;
+import frc.robot.utils.TriggerJoystick;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,10 +24,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
     PowerDistribution PDP = new PowerDistribution(0, ModuleType.kCTRE);
     public final DriveSubsystem driveSubsystem;
-
-    // Replace with CommandPS4Controller or CommandJoystick if needed
-    private final Joystick leftStick = new Joystick(0);
-    private final Joystick rightStick = new Joystick(1);
+    
+    private final TriggerJoystick leftJoytick = new TriggerJoystick(0);
+    private final TriggerJoystick rightJoystick = new TriggerJoystick(1);
     
 	static double driveMultiplier = 1;
 
@@ -48,15 +47,26 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
+
+        // Set the default command of the drive subsystem to control the drivetrain
         driveSubsystem.setDefaultCommand(driveSubsystem.run(
             () -> {
-                if(leftStick.getRawButton(1)&&leftStick.getRawButton(2)) {
-                    driveSubsystem.drive(-(leftStick.getY() * driveMultiplier), -(rightStick.getY() * driveMultiplier));
+                if(leftJoytick.getButtonState(1)&&leftJoytick.getButtonState(2)) {
+                    driveSubsystem.drive(-(leftJoytick.getY() * driveMultiplier), -(rightJoystick.getY() * driveMultiplier));
                 } else {
-                    driveSubsystem.drive(rightStick.getY() * driveMultiplier, leftStick.getY() * driveMultiplier);
+                    driveSubsystem.drive(rightJoystick.getY() * driveMultiplier, leftJoytick.getY() * driveMultiplier);
                 }
             }
         ));
+
+
+        rightJoystick.getButton(1).onTrue(Commands.runOnce(() -> {
+            driveSubsystem.setTransmission(DoubleSolenoid.Value.kForward);
+        }));
+
+        rightJoystick.getButton(2).onTrue(Commands.runOnce(() -> {
+            driveSubsystem.setTransmission(DoubleSolenoid.Value.kReverse);
+        }));
     }
 
     public void teleopInit() {

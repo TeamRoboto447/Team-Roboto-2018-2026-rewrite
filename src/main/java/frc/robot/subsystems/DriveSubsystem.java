@@ -44,6 +44,7 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putData("Drive/Differential Drive", diffDrive);
         SmartDashboard.putData("Drive/Left Encoder", leftDriveEncoder);
         SmartDashboard.putData("Drive/Right Encoder", rightDriveEncoder);
+        SmartDashboard.putData("Drive/Transmission", transmission);
     }
 
     public void resetEncoders() {
@@ -57,5 +58,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void drive(double leftSpeed, double rightSpeed) {
         diffDrive.tankDrive(leftSpeed, rightSpeed);
+    }
+
+    public void stop() {
+        diffDrive.tankDrive(0,0);
+    }
+
+    public void setTransmission(DoubleSolenoid.Value state) {
+        transmission.set(state);
     }
 }
