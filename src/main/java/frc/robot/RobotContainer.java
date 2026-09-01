@@ -52,9 +52,9 @@ public class RobotContainer {
         driveSubsystem.setDefaultCommand(driveSubsystem.run(
             () -> {
                 if(leftJoytick.buttonTwo().getAsBoolean() && leftJoytick.trigger().getAsBoolean()) {
-                    driveSubsystem.drive(-(leftJoytick.getY() * driveMultiplier), -(rightJoystick.getY() * driveMultiplier));
-                } else {
                     driveSubsystem.drive(rightJoystick.getY() * driveMultiplier, leftJoytick.getY() * driveMultiplier);
+                } else {
+                    driveSubsystem.drive(-(leftJoytick.getY() * driveMultiplier), -(rightJoystick.getY() * driveMultiplier));
                 }
             }
         ));

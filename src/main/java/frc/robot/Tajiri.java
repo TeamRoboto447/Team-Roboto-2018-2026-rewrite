@@ -33,47 +33,49 @@ public class Tajiri extends TimedRobot {
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
      */
+    @SuppressWarnings("unused")
     public Tajiri() {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
+        if (false) {
+            visionThread = new Thread(() -> {
+                // Get the UsbCamera from CameraServer
+                UsbCamera camera = CameraServer.startAutomaticCapture();
+                // Set the resolution
+                camera.setResolution(160, 120);
+                camera.setBrightness(10);
+                camera.setFPS(10);
 
-        visionThread = new Thread(() -> {
-            // Get the UsbCamera from CameraServer
-            UsbCamera camera = CameraServer.startAutomaticCapture();
-            // Set the resolution
-            camera.setResolution(160, 120);
-            camera.setBrightness(10);
-            camera.setFPS(10);
+                // Get a CvSink. This will capture Mats from the camera
+                CvSink cvSink = CameraServer.getVideo();
+                // Setup a CvSource. This will send images back to the Dashboard
+                CvSource outputStream = CameraServer.putVideo("Video", 640, 480);
 
-            // Get a CvSink. This will capture Mats from the camera
-            CvSink cvSink = CameraServer.getVideo();
-            // Setup a CvSource. This will send images back to the Dashboard
-            CvSource outputStream = CameraServer.putVideo("Video", 640, 480);
+                // Mats are very memory expensive. Lets reuse this Mat.
+                Mat mat = new Mat();
 
-            // Mats are very memory expensive. Lets reuse this Mat.
-            Mat mat = new Mat();
+                // This cannot be 'true'. The program will never exit if it is. This
+                // lets the robot stop this thread when restarting robot code or
+                // deploying.
+                while (!Thread.interrupted()) {
+                    // Tell the CvSink to grab a frame from the camera and put it
+                    // in the source mat. If there is an error notify the output.
+                    if (cvSink.grabFrame(mat) == 0) {
+                        // Send the output the error.
+                        outputStream.notifyError(cvSink.getError());
+                        // skip the rest of the current iteration
+                        continue;
+                    }
 
-            // This cannot be 'true'. The program will never exit if it is. This
-            // lets the robot stop this thread when restarting robot code or
-            // deploying.
-            while (!Thread.interrupted()) {
-                // Tell the CvSink to grab a frame from the camera and put it
-                // in the source mat. If there is an error notify the output.
-                if (cvSink.grabFrame(mat) == 0) {
-                    // Send the output the error.
-                    outputStream.notifyError(cvSink.getError());
-                    // skip the rest of the current iteration
-                    continue;
+                    // Give the output stream a new image to display
+                    outputStream.putFrame(mat);
                 }
+            });
 
-                // Give the output stream a new image to display
-                outputStream.putFrame(mat);
-            }
-        });
-
-        visionThread.setDaemon(true);
-        visionThread.start();
+            visionThread.setDaemon(true);
+            visionThread.start();
+        }
     }
 
     /**

@@ -30,6 +30,7 @@ public class DriveSubsystem extends SubsystemBase {
     public DriveSubsystem() {
         this.rightMotors = new Spark(0);
         this.leftMotors = new Spark(1);
+        this.leftMotors.setInverted(true);
 
         this.diffDrive = new DifferentialDrive(leftMotors, rightMotors);
 
