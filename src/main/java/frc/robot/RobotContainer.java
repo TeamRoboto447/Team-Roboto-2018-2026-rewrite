@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.utils.LogitechAttackThree;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -24,15 +25,18 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
     PowerDistribution PDP = new PowerDistribution(0, ModuleType.kCTRE);
     public final DriveSubsystem driveSubsystem;
+    public final GrabberSubsystem grabberSubsystem;
     
     private final LogitechAttackThree leftJoytick = new LogitechAttackThree(0);
     private final LogitechAttackThree rightJoystick = new LogitechAttackThree(1);
+    private final CommandXboxController operator = new CommandXboxController(2);
     
 	static double driveMultiplier = 1;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         driveSubsystem = new DriveSubsystem();
+        grabberSubsystem = new GrabberSubsystem();
         // Configure the trigger bindings
         configureBindings();
     }
@@ -66,6 +70,24 @@ public class RobotContainer {
 
         rightJoystick.buttonTwo().onTrue(Commands.runOnce(() -> {
             driveSubsystem.setTransmission(DoubleSolenoid.Value.kReverse);
+        }));
+
+        // Grabber
+
+        operator.leftBumper().onTrue(grabberSubsystem.runOnce(() -> {
+            grabberSubsystem.retractArm();
+        }));
+
+        operator.rightBumper().onTrue(grabberSubsystem.runOnce(() -> {
+            grabberSubsystem.extendArm();
+        }));
+
+        operator.a().onTrue(grabberSubsystem.runOnce(() -> {
+            grabberSubsystem.openGrabber();
+        }));
+
+        operator.y().onTrue(grabberSubsystem.runOnce(() -> {
+            grabberSubsystem.closeGrabber();
         }));
     }
 
