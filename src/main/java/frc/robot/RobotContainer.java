@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
 import frc.robot.utils.LogitechAttackThree;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -26,6 +27,7 @@ public class RobotContainer {
     PowerDistribution PDP = new PowerDistribution(0, ModuleType.kCTRE);
     public final DriveSubsystem driveSubsystem;
     public final GrabberSubsystem grabberSubsystem;
+    public final ElevatorSubsystem elevatorSubsystem;
     
     private final LogitechAttackThree leftJoytick = new LogitechAttackThree(0);
     private final LogitechAttackThree rightJoystick = new LogitechAttackThree(1);
@@ -37,6 +39,7 @@ public class RobotContainer {
     public RobotContainer() {
         driveSubsystem = new DriveSubsystem();
         grabberSubsystem = new GrabberSubsystem();
+        elevatorSubsystem = new ElevatorSubsystem();
         // Configure the trigger bindings
         configureBindings();
     }
@@ -63,6 +66,7 @@ public class RobotContainer {
             }
         ));
 
+        // Drive Transmission
 
         rightJoystick.trigger().onTrue(Commands.runOnce(() -> {
             driveSubsystem.setTransmission(DoubleSolenoid.Value.kForward);
@@ -89,6 +93,24 @@ public class RobotContainer {
         operator.y().onTrue(grabberSubsystem.runOnce(() -> {
             grabberSubsystem.closeGrabber();
         }));
+
+        operator.back()
+            .whileTrue(grabberSubsystem.run( () -> grabberSubsystem.pullIn() ))
+            .onFalse(grabberSubsystem.runOnce( () -> grabberSubsystem.stopMotors() ));
+        
+        operator.start()
+            .whileTrue(grabberSubsystem.run( () -> grabberSubsystem.pushOut() ))
+            .onFalse(grabberSubsystem.runOnce( () -> grabberSubsystem.stopMotors() ));
+
+        // Elevator
+
+        operator.povUp()
+            .whileTrue(elevatorSubsystem.run( () -> elevatorSubsystem.setRawSpeed(0.1) ))
+            .onFalse(elevatorSubsystem.runOnce( () -> elevatorSubsystem.stopLift()));
+
+        operator.povDown()
+            .whileTrue(elevatorSubsystem.run( () -> elevatorSubsystem.setRawSpeed(-0.1) ))
+            .onFalse(elevatorSubsystem.runOnce( () -> elevatorSubsystem.stopLift()));
     }
 
     public void teleopInit() {
