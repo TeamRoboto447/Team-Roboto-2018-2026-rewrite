@@ -114,7 +114,7 @@ public class RobotContainer {
 
         operator.b().whileTrue(elevatorSubsystem.run( () -> elevatorSubsystem.setRawSpeed(
             operator.getLeftY()
-        )));
+        ))).onFalse(elevatorSubsystem.runOnce( () -> elevatorSubsystem.stopLift() ));
     }
 
     public void teleopInit() {
