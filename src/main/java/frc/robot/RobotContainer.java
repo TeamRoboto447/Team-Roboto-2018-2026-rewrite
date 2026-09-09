@@ -104,13 +104,17 @@ public class RobotContainer {
 
         // Elevator
 
-        operator.povUp()
-            .whileTrue(elevatorSubsystem.run( () -> elevatorSubsystem.setRawSpeed(0.1) ))
-            .onFalse(elevatorSubsystem.runOnce( () -> elevatorSubsystem.stopLift()));
+        // operator.povUp()
+        //     .whileTrue(elevatorSubsystem.run( () -> elevatorSubsystem.manualRaise() ))
+        //     .onFalse(elevatorSubsystem.runOnce( () -> elevatorSubsystem.stopLift()));
 
-        operator.povDown()
-            .whileTrue(elevatorSubsystem.run( () -> elevatorSubsystem.setRawSpeed(-0.1) ))
-            .onFalse(elevatorSubsystem.runOnce( () -> elevatorSubsystem.stopLift()));
+        // operator.povDown()
+        //     .whileTrue(elevatorSubsystem.run( () -> elevatorSubsystem.manualLower() ))
+        //     .onFalse(elevatorSubsystem.runOnce( () -> elevatorSubsystem.stopLift() ));
+
+        operator.b().whileTrue(elevatorSubsystem.run( () -> elevatorSubsystem.setRawSpeed(
+            operator.getLeftY()
+        )));
     }
 
     public void teleopInit() {

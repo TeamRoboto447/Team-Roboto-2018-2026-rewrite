@@ -22,6 +22,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         liftMotor.set(speed);
     }
 
+    public void manualRaise() {
+        this.setRawSpeed(0.5);
+    }
+
+    public void manualLower() {
+        this.setRawSpeed(-0.5);
+    }
+
     public void stopLift() {
         liftMotor.stopMotor();
     }
